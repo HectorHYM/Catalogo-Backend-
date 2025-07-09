@@ -6,7 +6,7 @@ Crear una plataforma segura y administrable que permita a usuarios autenticarse,
 
 Tecnologías
 
-.Net
+Backend: .Net
 Base de datos: PostgreSQL / MySQL
 ORM: Entity Framework Core (EF Core)
 Control de versiones: Git con flujo GitFlow
