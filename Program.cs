@@ -1,41 +1,45 @@
+using Catalogo_Backend_.Data;
+using Microsoft.EntityFrameworkCore;
+using Catalogo_Backend_.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//* Se lee la cadena de conexión desde el archivo de configuración (appsettings.json)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-var app = builder.Build();
+//* Se registra el DbContext con PostgreSQL (Npgsql)
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var app = builder.Build(); //* Construye la aplicación
+
+//* Se crea el scope para obtener las instancias de los servicios
+using var scope = app.Services.CreateScope();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+//? Probando conexión a base de datos
+if (!ctx.Database.CanConnect())
 {
-    app.MapOpenApi();
+    logger.LogError("No se pudo conectar a la base de datos");
+    //throw new Exception("No se pudo conectar a la base de datos");
+}
+else
+{
+    //Console.WriteLine("Conexión a la base de datos exítosa");
+    logger.LogInformation("Conexión a la base de datos exítosa");
 }
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+//? Sembrando datos de prueba
+ctx.Users.Add(new User
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    Id = Guid.NewGuid(),
+    Name = "Héctor Jesús",
+    Username = "Blxsh",
+    Email = "hectorjesus029@gmail.com",
+    PasswordHash = "ABC2002",
+    Role = "admin",
+    IsActive = true
+});
+ctx.SaveChanges();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

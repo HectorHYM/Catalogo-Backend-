@@ -5,5 +5,8 @@
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=<<LOCALHOST>>;Port=<<PORT>>;Database=<<DATABASE_NAME>>;Username=<<USERNAME>>;Password=<<PASSWORD>>;Search Path=<<SCHEMA_NAME>>, public"
+  }
 }
