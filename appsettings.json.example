@@ -1,12 +1,29 @@
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=<<LOCALHOST>>;Port=<<PORT>>;Database=<<DATABASE_NAME>>;Username=<<USERNAME>>;Password=<<PASSWORD>>;Search Path=<<SCHEMA_NAME>>, public"
-  }
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "AllowedHosts": "*",
+    "ConnectionStrings": {
+        "DefaultConnection": "Host=<<LOCALHOST>>;Port=<<PORT>>;Database=<<DATABASE_NAME>>;Username=<<USERNAME>>;Password=<<PASSWORD>>;Search Path=<<SCHEMA_NAME>>, public"
+    },
+    "Smtp": {
+        "Host": "smtp.gmail.com",
+        "Port": "<<PORT>>",
+        "User": "<<VALID_EMAIL>>",
+        "Pass": "<<EMAIL_APP_PASSWORD>>", //! Almacenar de manera segura: null,
+        "From": "<<SENDER_EMAIL>>",
+        "FromName": "<<SENDER_NAME>>"
+    },
+    "Jwt": {
+        "Issuer": "<<BACKEND_URL>>" //* URL de quien envia el JWT
+        "Audience": "<<FRONTEND_URL>>", //* URL de quien recibe el JWT
+        "Key": "<<KEY>>"
+    },
+    "Token": {
+        "Secret": "<<SECRET>>" //* Secret para los tokens
+    },
+    "FrontendBaseUrl": "<<URL>>"
 }
