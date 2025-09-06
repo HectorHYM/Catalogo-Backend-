@@ -1,0 +1,75 @@
+﻿:root {
+    --purple: #B200FF;
+    --white: #ffffff;
+    --cardboard: #F5F0F0;
+}
+
+/* Fondo general */
+.swagger-ui {
+    background: var(--cardboard) !important;
+}
+
+.swagger-ui .scheme-container {
+    background: var(--cardboard) !important;
+}
+
+/* Topbar (Cabecera) */
+.swagger-ui .topbar {
+    padding: 20px !important;
+    background-color: var(--purple) !important; /* color principal */
+    color: var(--white) !important;
+}
+
+/* ocultar logo original (svg) */
+.swagger-ui .topbar .link svg {
+    display: none !important;
+}
+
+/* Se inserta un logo como pseudo-elemento del enlace */
+.swagger-ui .topbar .topbar-wrapper a {
+    position: relative;
+}
+
+/* Pseudo-elemento con la imagen SVG */
+.swagger-ui .topbar .topbar-wrapper a::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 150px;
+    height: 40px;
+    background-image: url('/swagger-ui/Logo-NoBg.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left center;
+}
+
+.swagger-ui .information-container.wrapper .version-stamp{
+    background: var(--purple) !important;
+}
+
+/* Botón Authorize */
+.swagger-ui .scheme-container .auth-wrapper .btn.authorize {
+    color: var(--purple) !important;
+    border-color: var(--purple) !important;
+}
+
+/* Icono SVG dentro del botón authorize */
+.swagger-ui .auth-wrapper .btn.authorize svg,
+.swagger-ui .auth-wrapper .btn.authorize svg path {
+    fill: var(--purple) !important;
+    stroke: none !important;
+}
+
+/* opblocks (Resumen de cada endpoint) */
+.opblock-summary {
+    background: var(--cardboard) !important;
+    border-left: 3px solid !important;
+}
+
+/* Ajuste de botón Execute */
+.swagger-ui .btn.execute {
+    color: var(--white) !important;
+    background: var(--purple) !important;
+    border: 4px solid var(--purple) !important;
+}
