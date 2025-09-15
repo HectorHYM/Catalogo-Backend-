@@ -16,7 +16,7 @@ namespace CatalogoBackend.Services
             _tokenDao = tokenDao;
         }
 
-        public async Task RegisterToken(string rawToken, Guid userId)
+        public async Task RegisterToken(string rawToken, Guid userId, string type)
         {
             var secret = _conf["Token:Secret"];
             var hashToken = HashHelper.HashTokenHex(rawToken, secret);
@@ -25,7 +25,7 @@ namespace CatalogoBackend.Services
             {
                 UserId = userId,
                 TokenValue = hashToken,
-                Type = "access",
+                Type = type,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(30)
             };

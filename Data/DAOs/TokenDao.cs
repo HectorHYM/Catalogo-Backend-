@@ -27,8 +27,9 @@ namespace CatalogoBackend.Data.DAOs
             var tokenEntity = await _db.Tokens
                                         .Include(t => t.User)
                                         .FirstOrDefaultAsync(t =>
-                                        t.TokenValue == tokenHash && 
-                                        t.Type == "access" &&
+                                        t.TokenValue == tokenHash &&
+                                        t.Type == "access" ||
+                                        t.Type == "recover" &&
                                         t.IsActive &&
                                         t.ExpiresAt > DateTime.UtcNow);
 
@@ -59,7 +60,7 @@ namespace CatalogoBackend.Data.DAOs
                 await _db.SaveChangesAsync();
                 await trx.CommitAsync();
 
-                return GeneralResponse<string>.Ok(null, "Contraseña establecida, cuenta activada."); //? NoContent
+                return GeneralResponse<string>.Ok(null, "Contraseña establecida."); //? NoContent
             }
             catch
             {

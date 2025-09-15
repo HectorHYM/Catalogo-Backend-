@@ -2,6 +2,6 @@
 {
     public interface ITokenService
     {
-        Task RegisterToken(string token, Guid userId);
+        Task RegisterToken(string token, Guid userId, string type);
     }
 }
