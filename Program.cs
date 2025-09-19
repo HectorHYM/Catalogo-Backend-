@@ -143,7 +143,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll"); //* Se aplica la política de CORS para permitir los consumidores de la API
-app.UseHttpsRedirection(); //* Las peticiones se mandan a conexión segura
+//app.UseHttpsRedirection(); //* Las peticiones se mandan a conexión segura
 app.UseAuthentication(); //* Se autentica al usuario con el JWT
 app.UseAuthorization(); //* Se autorizan los roles, permisos etc...
 app.UseStaticFiles();

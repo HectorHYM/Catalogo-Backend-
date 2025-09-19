@@ -1,9 +1,11 @@
+using System.Security.Claims;
 using CatalogoBackend.Data.IA;
 using CatalogoBackend.Models.DTOs;
 using CatalogoBackend.Models.Entities;
 using CatalogoBackend.Models.Responses;
 using CatalogoBackend.Services.IA;
 using CatalogoBackend.Utils;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace CatalogoBackend.Services
 {
@@ -197,6 +199,30 @@ namespace CatalogoBackend.Services
             }
 
             return GeneralResponse<string>.Ok(null, "Correo envíado exitosamente");
+        }
+
+        public async Task<GeneralResponse<UserDto>> GetUser(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogError("No se encontró ningún userId en las claims del usuario.");
+                return GeneralResponse<UserDto>.Fail(null, "Usuario no encontrado.", ResponseCode.Unauthorized);
+            }
+
+            if (!Guid.TryParse(userId, out var userGuid))
+            {
+                _logger.LogError("Claim user id no es convertible a Guid: {userId}", userId);
+                return GeneralResponse<UserDto>.Fail(null, "Autorización denegada.", ResponseCode.Unauthorized);
+            }
+
+            var user = await _userDao.GetById(userGuid);
+            if (user == null)
+            {
+                return GeneralResponse<UserDto>.Fail(null, "Usuario no encontrado.", ResponseCode.NotFound);
+            }
+
+            var dto = new UserDto { Name = user.Name, Username = user.Username, Email = user.Email, IsActive = user.IsActive, Role = user.Role };
+            return GeneralResponse<UserDto>.Ok(dto, "Ok");
         }
     }
 }

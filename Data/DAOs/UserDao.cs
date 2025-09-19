@@ -19,7 +19,7 @@ namespace CatalogoBackend.Data.DAOs{
             return user;
         }
 
-        public async Task<User?> GetById(int id)
+        public async Task<User?> GetById(Guid id)
         {
             return await _db.Users.FindAsync(id);
         }
