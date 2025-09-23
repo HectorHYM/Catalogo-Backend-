@@ -41,7 +41,7 @@ namespace CatalogoBackend.Services
                 return GeneralResponse<UserDto>.Fail(null, "Nombre de usuario o correo ya existente.");
             }
 
-            if (dto.Role != "client" && dto.Role != "admin") return GeneralResponse<UserDto>.Fail(null, "Rol no validado, intente más tarde.", ResponseCode.ServerError);
+            if (dto.Role != "client" && dto.Role != "admin") return GeneralResponse<UserDto>.Fail(null, "Rol no validado, intente más tarde.");
 
             //* Se mapea el DTO a la entidad POCO
             var user = new User
@@ -65,7 +65,7 @@ namespace CatalogoBackend.Services
             }
             else
             {
-                return GeneralResponse<UserDto>.Fail(null, "Error. No se pudo registrar el usuario. Intente más tarde");
+                return GeneralResponse<UserDto>.Fail(null, "Error. No se pudo registrar el usuario. Intente más tarde", ResponseCode.ServerError);
             }
 
             //* Se generá URL para enviar al correo del usuario con su token crudo
@@ -90,7 +90,7 @@ namespace CatalogoBackend.Services
         {
             if(string.IsNullOrWhiteSpace(dto.Token) || string.IsNullOrWhiteSpace(dto.Password))
             {
-                return GeneralResponse<string>.Fail(null, "Error: Token/Contraseña no encontrados"); //? BadRequest
+                return GeneralResponse<string>.Fail(null, "Error: Datos no encontrados."); //? BadRequest
                 
             }
 
@@ -119,7 +119,7 @@ namespace CatalogoBackend.Services
             }
             else
             {
-                return GeneralResponse<string>.Fail(null, "Ocurrio un error, token expirado"); //? BadRequest
+                return GeneralResponse<string>.Fail(null, "Ocurrio un error: Enlace expirado o cuenta no validada, obtenga un nuevo enlace al recuperar su contraseña"); //? BadRequest
             }
         }
 
@@ -149,7 +149,7 @@ namespace CatalogoBackend.Services
 
             if( tokenString == null)
             {
-                return GeneralResponse<string>.Fail(tokenString, "Error al generar token de sesión, intente más tarde.", ResponseCode.ServerError);
+                return GeneralResponse<string>.Fail(tokenString, "Error al generar instancia de sesión, intente más tarde.", ResponseCode.ServerError);
             }
 
             return GeneralResponse<string>.Ok(tokenString, "Inicio correcto de sesión.");
