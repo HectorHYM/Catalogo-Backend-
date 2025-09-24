@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Catalogo_Backend_.Models;
+using CatalogoBackend.Models.Entities;
 
-namespace Catalogo_Backend_.Data
+namespace CatalogoBackend.Data
 {
     public class AppDbContext : DbContext
     {
@@ -14,6 +14,7 @@ namespace Catalogo_Backend_.Data
         //*DbSet para cada una de las entidades del modelo
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Token> Tokens { get; set; }
 
         //*Configuración del modelo de datos
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,8 +37,8 @@ namespace Catalogo_Backend_.Data
                 entity.HasIndex(e => e.Username).IsUnique().HasDatabaseName("tbl_users_ix_username"); //* Crea un índice único para la columna Username
                 entity.Property(e => e.Email).HasColumnName("email").HasMaxLength(50).IsRequired();
                 entity.HasIndex(e => e.Email).IsUnique().HasDatabaseName("tbl_users_ix_email");
-                entity.Property(e => e.PasswordHash).HasColumnName("password_hash").HasMaxLength(255).IsRequired();
-                entity.Property(e => e.Role).HasColumnName("role").HasMaxLength(20).IsRequired();
+                entity.Property(e => e.PasswordHash).HasColumnName("password_hash").HasMaxLength(255).IsRequired(false);
+                entity.Property(e => e.Role).HasColumnName("roleID").HasMaxLength(20).IsRequired();
                 entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true).IsRequired();
                 entity.Property(e => e.DeletedAt).HasColumnName("deleted_at").HasColumnType("timestamp with time zone");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("timestamp with time zone").HasDefaultValueSql("NOW()").ValueGeneratedOnAdd(); //* Configura la columna CreatedAt como NOT NULL, con valor por defecto de la fecha y hora actual
@@ -66,10 +67,32 @@ namespace Catalogo_Backend_.Data
                 entity.Property(e => e.DeletedAt).HasColumnName("deleted_at").HasColumnType("timestamp with time zone");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("timestamp with time zone").HasDefaultValueSql("NOW()").ValueGeneratedOnAdd(); //* Configura la columna CreatedAt como NOT NULL, con valor por defecto de la fecha y hora actual
                 entity.Property(e => e.CreatedById).HasColumnName("created_by");
-                entity.HasOne(e => e.CreatedBy).WithMany(p => p.CreatedProducts).HasForeignKey(e => e.CreatedById).OnDelete(DeleteBehavior.SetNull).HasConstraintName("tbl_products_fk_created_by"); //* Se configura la relación con la entidad User para CreatedBy, permitiendo que al eliminar un usuario, el campo se establezca a NULL (ON DELETE SET NULL) y estableciendo la colección de usuarios creados por este usuario.
+                entity.HasOne(e => e.CreatedBy).WithMany(u => u.CreatedProducts).HasForeignKey(e => e.CreatedById).OnDelete(DeleteBehavior.SetNull).HasConstraintName("tbl_products_fk_created_by"); //* Se configura la relación con la entidad User para CreatedBy, permitiendo que al eliminar un usuario, el campo se establezca a NULL (ON DELETE SET NULL) y estableciendo la colección de usuarios creados por este usuario.
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at").HasColumnType("timestamp with time zone").ValueGeneratedOnAddOrUpdate();
                 entity.Property(e => e.UpdatedById).HasColumnName("updated_by");
-                entity.HasOne(e => e.UpdatedBy).WithMany(p => p.UpdatedProducts).HasForeignKey(e => e.UpdatedById).OnDelete(DeleteBehavior.SetNull).HasConstraintName("tbl_products_fk_updated_by");
+                entity.HasOne(e => e.UpdatedBy).WithMany(u => u.UpdatedProducts).HasForeignKey(e => e.UpdatedById).OnDelete(DeleteBehavior.SetNull).HasConstraintName("tbl_products_fk_updated_by");
+            });
+
+            modelBuilder.Entity<Token>(entity =>
+            {
+                entity.ToTable(name: "tbl_tokens", buildAction: table =>
+                {
+                    table.HasCheckConstraint(name: "chk_type", sql: "type IN ('access', 'recover')"); //* Se configura una restricción de chequeo para la columna Type, permitiendo solo los valores 'access' o 'recover'
+                    table.HasCheckConstraint(name: "chk_expires", sql: "expires_at > created_at"); //* Se configura una restricción de chequeo para la columna ExpiresAt, asegurando que la fecha de expiración sea posterior a la fecha de creación
+                });
+
+                entity.HasKey(e => e.Id); //* Se configura la clave primaria de la entidad Token
+                entity.Property(e => e.Id).HasColumnName("id").IsRequired().HasDefaultValueSql("gen_random_uuid()").ValueGeneratedOnAdd();
+                entity.Property(e => e.UserId).HasColumnName("user_id").IsRequired();
+                entity.HasOne(e => e.User).WithMany(u => u.UserTokens).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("tbl_tokens_fk_user_id"); //* Se configura la relación con la entidad User, estableciendo que al eliminar un usuario, se eliminen sus tokens asociados (ON DELETE CASCADE)
+                entity.HasIndex(e => e.UserId).HasDatabaseName("idx_tbl_tokens_userid");
+                entity.Property(e => e.TokenValue).HasColumnName("token_hash").IsRequired().HasMaxLength(255); //* Se configura la columna TokenValue como NOT NULL, con una longitud máxima de 255 caracteres
+                entity.HasIndex(e => e.TokenValue).IsUnique().HasDatabaseName("idx_tbl_tokens_token");
+                entity.Property(e => e.Type).HasColumnName("type").IsRequired().HasMaxLength(40);
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at").HasColumnType("timestamp with time zone").HasDefaultValueSql("NOW()").ValueGeneratedOnAdd().IsRequired();
+                entity.Property(e => e.ExpiresAt).HasColumnName("expires_at").HasColumnType("timestamp with time zone").IsRequired();
+                entity.Property(e => e.UsedAt).HasColumnName("used_at").HasColumnType("timestamp with time zone");
+                entity.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true).IsRequired();
             });
         }
     }
