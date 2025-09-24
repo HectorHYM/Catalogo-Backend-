@@ -3,7 +3,9 @@ using CatalogoBackend.Models.Responses;
 using CatalogoBackend.Services.IA;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 [ApiController]
 [Route("/users")] //?Cambio de ruta a solamente "users"
@@ -179,5 +181,18 @@ public class UsersController : ControllerBase
             _logger.LogError("Error al iniciar sesión: {ex}", ex);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+    }
+
+    [HttpGet("get-user")]
+    [Authorize]
+    public async Task<IActionResult> GetUser()
+    {
+        //* Se extraen las claims del JWT validado por el middleware. (Desde httpcontext.user)
+        var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        _logger.LogInformation("Claims del usuario: {claims}", string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
+
+        var res = await _userService.GetUser(userId);
+
+        return Ok(res);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace CatalogoBackend.Models.Responses
 {
-    public enum ResponseCode { Ok, NoContent, BadRequest, NotFound, CreatedAtAction ,ServerError };
+    public enum ResponseCode { Ok, NoContent, BadRequest, NotFound, CreatedAtAction, ServerError, Unauthorized };
     public class GeneralResponse<T>
     {
         public T? Data { get; set; }
