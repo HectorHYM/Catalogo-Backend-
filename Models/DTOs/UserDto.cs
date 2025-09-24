@@ -21,5 +21,7 @@ namespace CatalogoBackend.Models.DTOs
         public string Role { get; set; } = null!;
         [Required]
         public bool IsActive { get; set; } = false;
+        [Required]
+        public string TokenType { get; set; } = "access";
     }
 }

@@ -3,6 +3,7 @@ using CatalogoBackend.Models.Responses;
 using CatalogoBackend.Services.IA;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 [ApiController]
 [Route("/users")] //?Cambio de ruta a solamente "users"
@@ -73,11 +74,11 @@ public class UsersController : ControllerBase
         try
         {
             var res = await _userService.Activate(dto);
-            _logger.LogInformation("Respuesta del servicio de usuario: {res}", res);
+            _logger.LogInformation("Respuesta del servicio de usuario para activación de cuenta: {res}", JsonSerializer.Serialize(res));
 
             switch (res.Code)
             {
-                case ResponseCode.Ok: 
+                case ResponseCode.Ok:
                     return Ok(res);
                 case ResponseCode.NoContent:
                     return NoContent();
@@ -113,7 +114,45 @@ public class UsersController : ControllerBase
         try
         {
             var res = await _userService.Login(dto);
-            _logger.LogInformation("Respuesta del servicio de usuario para el login: {res}", res);
+            _logger.LogInformation("Respuesta del servicio de usuario para el login: {res}", JsonSerializer.Serialize(res));
+
+            switch (res.Code)
+            {
+                case ResponseCode.Ok:
+                    return Ok(res);
+                case ResponseCode.NoContent:
+                    return NoContent();
+                case ResponseCode.BadRequest:
+                    return BadRequest(res);
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.CreatedAtAction:
+                    return CreatedAtAction(nameof(Activate), res);
+                case ResponseCode.ServerError:
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                default:
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            //^LOG
+            _logger.LogError("Error al iniciar sesión: {ex}", ex);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPost("recover-password")]
+    public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordDto dto)
+    {
+        //^LOG
+        _logger.LogInformation("Datos entrantes: {email}, {type}", dto.Email, dto.TokenType);
+
+        try
+        {
+            var res = await _userService.RecoverPassword(dto.Email, dto.TokenType);
+            _logger.LogInformation("Respuesta del servicio de usuario para la recuperación de contraseña: {res}", JsonSerializer.Serialize(res));
 
             switch (res.Code)
             {

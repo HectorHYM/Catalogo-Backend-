@@ -59,7 +59,7 @@ namespace CatalogoBackend.Services
             if (createdUser != null)
             {
                 //* Se registra el nuevo token de usuario para activar la cuenta
-                await _tokenService.RegisterToken(rawToken, createdUser.Id);
+                await _tokenService.RegisterToken(rawToken, createdUser.Id, dto.TokenType);
             }
             else
             {
@@ -69,7 +69,7 @@ namespace CatalogoBackend.Services
             //* Se generá URL para enviar al correo del usuario con su token crudo
             var confirmUrl = _emailGenerator.GenerateConfirmUrl(rawToken);
             //* Se generá el cuerpo del correo
-            var builderHtmlBody = _emailGenerator.GenerateHtmlBody(createdUser.Username, confirmUrl);
+            var builderHtmlBody = _emailGenerator.GenerateHtmlBody("Register", createdUser.Username, confirmUrl);
 
             //^ Se envía correo (idealmente en background job, pero por el momento se hace directamente)
             try
@@ -101,12 +101,12 @@ namespace CatalogoBackend.Services
             if (tokenEntity != null)
             {
                 //* Se generá el cuerpo del correo
-                var htmlBody = _emailGenerator.GenerateHtmlBody(tokenEntity.User.Username, "", dto.Password);
+                var htmlBody = _emailGenerator.GenerateHtmlBody("Activate", tokenEntity.User.Username, "", dto.Password);
 
                 //^ Se envía correo (idealmente en background job, pero por el momento se hace directamente)
                 try
                 {
-                    await _emailService.SendEmailAsync(tokenEntity.User.Email, "Activación de cuenta", htmlBody);
+                    await _emailService.SendEmailAsync(tokenEntity.User.Email, "Establecimiento de contraseña/Activación de cuenta", htmlBody);
                 }
                 catch (Exception ex)
                 {
@@ -151,6 +151,52 @@ namespace CatalogoBackend.Services
             }
 
             return GeneralResponse<string>.Ok(tokenString, "Inicio correcto de sesión.");
+        }
+
+        //* Método para recuperar contraseña en caso de olvidarla
+        public async Task<GeneralResponse<string>> RecoverPassword(string email, string type)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return GeneralResponse<string>.Fail(null, "No se proporciono ningún correo electrónico.");
+            }
+
+            var rawToken = HashHelper.GenerateToken();
+            var user = await _userDao.GetByEmail(email);
+
+            if(user != null)
+            {
+                try
+                {
+                    await _tokenService.RegisterToken(rawToken, user.Id, type);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Error al registrar el token en la DB: {ex}", ex);
+                    return GeneralResponse<string>.Fail(null, "Error, intente más tarde", ResponseCode.ServerError);
+                }
+            }
+            else
+            {
+                return GeneralResponse<string>.Fail(null, "Usuario no encontrado", ResponseCode.NotFound);
+            }
+
+            //* Se generá URL para enviar al correo del usuario con su token crudo
+            var confirmUrl = _emailGenerator.GenerateConfirmUrl(rawToken);
+            //* Se generá el cuerpo del correo
+            var builderHtmlBody = _emailGenerator.GenerateHtmlBody("Recover", user.Username, confirmUrl);
+
+            //^ Se envía correo (idealmente en background job, pero por el momento se hace directamente)
+            try
+            {
+                await _emailService.SendEmailAsync(user.Email, "Recuperación de contraseña", builderHtmlBody);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error enviando email de confirmación a {Email}", user.Email);
+            }
+
+            return GeneralResponse<string>.Ok(null, "Correo envíado exitosamente");
         }
     }
 }
