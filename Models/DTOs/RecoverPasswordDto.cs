@@ -9,5 +9,7 @@ namespace CatalogoBackend.Models.DTOs
         public string Email { get; set; } = null!;
         [Required]
         public string TokenType { get; set; } = "recover";
+        [Required]
+        public string Flow { get; set; } = "recover";
     }
 }

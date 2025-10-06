@@ -69,7 +69,7 @@ namespace CatalogoBackend.Services
             }
 
             //* Se generá URL para enviar al correo del usuario con su token crudo
-            var confirmUrl = _emailGenerator.GenerateConfirmUrl(rawToken);
+            var confirmUrl = _emailGenerator.GenerateConfirmUrl(rawToken, dto.Flow);
             //* Se generá el cuerpo del correo
             var builderHtmlBody = _emailGenerator.GenerateHtmlBody("Register", createdUser.Username, confirmUrl);
 
@@ -156,7 +156,7 @@ namespace CatalogoBackend.Services
         }
 
         //* Método para recuperar contraseña en caso de olvidarla
-        public async Task<GeneralResponse<string>> RecoverPassword(string email, string type)
+        public async Task<GeneralResponse<string>> RecoverPassword(string email, string type, string flow)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -184,7 +184,7 @@ namespace CatalogoBackend.Services
             }
 
             //* Se generá URL para enviar al correo del usuario con su token crudo
-            var confirmUrl = _emailGenerator.GenerateConfirmUrl(rawToken);
+            var confirmUrl = _emailGenerator.GenerateConfirmUrl(rawToken, flow);
             //* Se generá el cuerpo del correo
             var builderHtmlBody = _emailGenerator.GenerateHtmlBody("Recover", user.Username, confirmUrl);
 
