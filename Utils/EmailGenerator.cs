@@ -17,11 +17,12 @@ namespace CatalogoBackend.Utils
         }
 
         //* Se construye URL de confirmación
-        public string GenerateConfirmUrl(string rawToken)
+        public string GenerateConfirmUrl(string rawToken, string flow)
         {
             var baseFront = _conf["FrontendBaseUrl"] ? .TrimEnd('/') ?? "https://miapp.com";
             var query = new Dictionary<string, string?>
             {
+                ["flow"] = flow,
                 ["token"] = rawToken
             };
             var confirmUrl = QueryHelpers.AddQueryString($"{baseFront}/users/password", query); //? http://localhost:4200/password?token=abc-123_XYZ

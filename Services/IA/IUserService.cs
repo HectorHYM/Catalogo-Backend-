@@ -9,7 +9,7 @@ namespace CatalogoBackend.Services.IA
         Task<GeneralResponse<UserDto>> Register(UserDto userDto);
         Task<GeneralResponse<string>> Activate(ActivateDto activateDto);
         Task<GeneralResponse<string>> Login(LoginDto loginDto);
-        Task<GeneralResponse<string>> RecoverPassword(string email, string type);
+        Task<GeneralResponse<string>> RecoverPassword(string email, string type, string flow);
         Task<GeneralResponse<UserDto>> GetUser(string ?userId);
     }    
 }

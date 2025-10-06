@@ -23,5 +23,7 @@ namespace CatalogoBackend.Models.DTOs
         public bool IsActive { get; set; } = false;
         [Required]
         public string TokenType { get; set; } = "access";
+        [Required]
+        public string Flow { get; set; } = "set";
     }
 }

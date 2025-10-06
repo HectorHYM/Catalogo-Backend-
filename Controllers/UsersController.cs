@@ -26,7 +26,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Register([FromBody] UserDto dto)
     {
         //^LOG
-        _logger.LogInformation("Usuario a registrar: {Name}, {Username}, {Email}, {Role}, {IsActive}", dto.Name, dto.Username, dto.Email, dto.Role, dto.IsActive);
+        _logger.LogInformation("Usuario a registrar: {Name}, {Username}, {Email}, {Role}, {IsActive}, {Flow}", dto.Name, dto.Username, dto.Email, dto.Role, dto.IsActive, dto.Flow);
         if (!ModelState.IsValid)
         {
             return BadRequest(GeneralResponse<string>.Fail(null, "Error al ingresar usuario, faltan datos."));
@@ -153,7 +153,7 @@ public class UsersController : ControllerBase
 
         try
         {
-            var res = await _userService.RecoverPassword(dto.Email, dto.TokenType);
+            var res = await _userService.RecoverPassword(dto.Email, dto.TokenType, dto.Flow);
             _logger.LogInformation("Respuesta del servicio de usuario para la recuperación de contraseña: {res}", JsonSerializer.Serialize(res));
 
             switch (res.Code)
