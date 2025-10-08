@@ -19,13 +19,13 @@ namespace CatalogoBackend.Utils
         //* Se construye URL de confirmación
         public string GenerateConfirmUrl(string rawToken, string flow)
         {
-            var baseFront = _conf["FrontendBaseUrl"] ? .TrimEnd('/') ?? "https://miapp.com";
-            var query = new Dictionary<string, string?>
-            {
-                ["flow"] = flow,
-                ["token"] = rawToken
-            };
-            var confirmUrl = QueryHelpers.AddQueryString($"{baseFront}/users/password", query); //? http://localhost:4200/password?token=abc-123_XYZ
+            var baseFront = _conf["FrontendBaseUrl"]?.TrimEnd('/') ?? "https://miapp.com";
+
+            //* Se contruye el fragment manualmente
+            var tokenEscaped = Uri.EscapeDataString(rawToken);
+            var flowEscaped = Uri.EscapeDataString(flow);
+
+            var confirmUrl = $"{baseFront}/users/password#token={tokenEscaped}&flow={flowEscaped}"; //? http://localhost:4200/password#token=abc-123_XYZ&flow=set
 
             return confirmUrl;
         }

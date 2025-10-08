@@ -129,11 +129,15 @@ namespace CatalogoBackend.Services
 
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
             {
-                return GeneralResponse<string>.Fail(null, "Error: Datos de inicio de sesión no proporcionados"); //? BadRequest
+                return GeneralResponse<string>.Fail(null, "Datos de inicio de sesión no proporcionados"); //? BadRequest
 
             }
 
             var user = await _userDao.GetByEmail(dto.Email);
+
+            if (user == null) {
+                return GeneralResponse<string>.Fail(null, "Cuenta no existente."); //?BadRequest
+            }
 
             var hashedPassDb = user?.PasswordHash;
             if (hashedPassDb == null) return GeneralResponse<string>.Fail(null, "Usuario no encontrado, revise sus credenciales.", ResponseCode.NotFound);
@@ -180,7 +184,7 @@ namespace CatalogoBackend.Services
             }
             else
             {
-                return GeneralResponse<string>.Fail(null, "Usuario no encontrado", ResponseCode.NotFound);
+                return GeneralResponse<string>.Fail(null, "Usuario no encontrado, primero debe registrar una cuenta."); //? NotFound
             }
 
             //* Se generá URL para enviar al correo del usuario con su token crudo

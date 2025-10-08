@@ -65,7 +65,7 @@ namespace CatalogoBackend.Services
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Error en el envío del correo: {message}", ex.Message);
-                return GeneralResponse<string>.Fail(null, "Error en el envío del correo", ResponseCode.ServerError);
+                return GeneralResponse<string>.Fail(null, "Error en el envío del correo, verifique que la cuenta exista.", ResponseCode.ServerError);
             }
             finally
             {
