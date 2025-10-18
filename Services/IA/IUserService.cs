@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using CatalogoBackend.Models.DTOs;
 using CatalogoBackend.Models.Responses;
 

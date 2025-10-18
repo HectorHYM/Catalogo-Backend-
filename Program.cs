@@ -27,6 +27,7 @@ builder.Logging.AddDebug(); //* Se añade el debug logger que envía logs al out
 builder.Logging.AddFilter("Microsoft", LogLevel.Warning); //* Filtra los logs de Microsoft a Warning
 builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning); //* Filtra los logs de Entity Framework Core a Warning
 builder.Logging.AddFilter("CatalogoBackend.Controllers.UsersController", LogLevel.Information); //* Filtra los logs del controlador de usuarios a Information
+builder.Logging.AddFilter("CatalogoBackend.Controllers.ProductsController", LogLevel.Information);
 builder.Logging.AddFilter("CatalogoBackend.Services.EmailService", LogLevel.Information);
 builder.Logging.AddFilter("CatalogoBackend.Services.UserService", LogLevel.Information);
 
@@ -38,6 +39,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserDao, UserDao>().AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenDao, TokenDao>().AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IProductDao, ProductDao>().AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EmailGenerator>();
 builder.Services.AddScoped<JwtGenerator>();
@@ -76,11 +78,8 @@ builder.Services.AddAuthentication(options => {
 // 🚀 Se añade el Swagger al contenedor de dependencias
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Catálogo de productos",
-        Version = "v1"
-    });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catálogo de productos", Version = "v1" });
+    c.SwaggerDoc("v2", new OpenApiInfo { Title = "Catálogo de productos", Version = "v2" });
 
     // 🔐 Configuración de seguridad (JWT) para saber como es que debe de mandarse el Bearer en la petición
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -136,6 +135,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catálogo v1");
+        c.SwaggerEndpoint("/swagger/v2/swagger.json", "Catálogo v2");
         c.InjectStylesheet("/swagger-ui/custom.css"); //? Ruta relativa a wwwroot
     });
 

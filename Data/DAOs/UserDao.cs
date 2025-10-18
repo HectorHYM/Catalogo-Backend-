@@ -1,6 +1,5 @@
 using CatalogoBackend.Data.IA;
 using CatalogoBackend.Models.Entities;
-using CatalogoBackend.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogoBackend.Data.DAOs{

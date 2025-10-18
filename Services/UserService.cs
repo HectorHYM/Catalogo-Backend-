@@ -1,11 +1,9 @@
-using System.Security.Claims;
 using CatalogoBackend.Data.IA;
 using CatalogoBackend.Models.DTOs;
 using CatalogoBackend.Models.Entities;
 using CatalogoBackend.Models.Responses;
 using CatalogoBackend.Services.IA;
 using CatalogoBackend.Utils;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace CatalogoBackend.Services
 {

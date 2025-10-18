@@ -1,5 +1,4 @@
 using CatalogoBackend.Models.Entities;
-using CatalogoBackend.Models.Responses;
 
 namespace CatalogoBackend.Data.IA{
     public interface IUserDao

@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.IdentityModel.Tokens.Jwt;
 
 [ApiController]
-[Route("/users")] //?Cambio de ruta a solamente "users"
+[Route("/users")] //? Cambio de ruta a solamente "users"
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -128,8 +128,6 @@ public class UsersController : ControllerBase
                     return BadRequest(res);
                 case ResponseCode.NotFound:
                     return NotFound();
-                case ResponseCode.CreatedAtAction:
-                    return CreatedAtAction(nameof(Activate), res);
                 case ResponseCode.ServerError:
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 default:
@@ -166,8 +164,6 @@ public class UsersController : ControllerBase
                     return BadRequest(res);
                 case ResponseCode.NotFound:
                     return NotFound();
-                case ResponseCode.CreatedAtAction:
-                    return CreatedAtAction(nameof(Activate), res);
                 case ResponseCode.ServerError:
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 default:
@@ -189,10 +185,34 @@ public class UsersController : ControllerBase
     {
         //* Se extraen las claims del JWT validado por el middleware. (Desde httpcontext.user)
         var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return BadRequest("Usuario no válidado");
+
         _logger.LogInformation("Claims del usuario: {claims}", string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}")));
 
-        var res = await _userService.GetUser(userId);
+        try
+        {
+            var res = await _userService.GetUser(userId);
+            switch (res.Code)
+            {
+                case ResponseCode.Ok:
+                    return Ok(res);
+                case ResponseCode.NoContent:
+                    return NoContent();
+                case ResponseCode.BadRequest:
+                    return BadRequest(res);
+                case ResponseCode.NotFound:
+                    return NotFound();
+                case ResponseCode.ServerError:
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                default:
+                    return StatusCode(StatusCodes.Status500InternalServerError);
 
-        return Ok(res);
+            }
+        }
+        catch(InvalidOperationException ex)
+        {
+            _logger.LogError("Error al obtener el usuario con el JWT: {ex}", ex);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 }
