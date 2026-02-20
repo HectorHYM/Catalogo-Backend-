@@ -8,6 +8,8 @@ namespace CatalogoBackend.Models.Entities
         public int Stock { get; set; }
         public string? ImgUrl { get; set; }
         public bool IsActive { get; set; } = true;
+        public int CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
         public DateTimeOffset? DeletedAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public Guid? CreatedById { get; set; } //* Clave foranea nullable por ON DELETE SET NULL solo con el valor del ID del usuario que creó este otro
@@ -15,5 +17,6 @@ namespace CatalogoBackend.Models.Entities
         public DateTimeOffset UpdatedAt { get; set; }
         public Guid? UpdatedById { get; set; }
         public User? UpdatedBy { get; set; }
+        public ICollection<Favorite>? FavoritedBy { get; set; } = new List<Favorite>(); //* Colección de usuarios que han seleccionado como favorito al producto.
     }
 }

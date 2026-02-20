@@ -22,5 +22,6 @@ namespace CatalogoBackend.Models.Entities
         public ICollection<Product>? CreatedProducts { get; set; } = new List<Product>(); //* Colección de productos creados por un usuario, para la relación de uno a muchos de forma bidireccional
         public ICollection<Product>? UpdatedProducts { get; set; } = new List<Product>(); //* Colección de productos actualizados por un usuario, para la relación de uno a muchos de forma bidireccional
         public ICollection<Token>? UserTokens { get; set; } = new List<Token>(); //* Colección de tokens asociados al usuario, para la relación de uno a muchos de forma bidireccional
+        public ICollection<Favorite>? FavoritesProducts { get; set; } = new List<Favorite>(); //* Colección de favoritos seleccionados por el usuario.
     }
 }
