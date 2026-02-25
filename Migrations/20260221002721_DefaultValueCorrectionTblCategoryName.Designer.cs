@@ -3,6 +3,7 @@ using System;
 using CatalogoBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CatalogoBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260221002721_DefaultValueCorrectionTblCategoryName")]
+    partial class DefaultValueCorrectionTblCategoryName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +45,7 @@ namespace CatalogoBackend.Migrations
 
                     b.ToTable("tbl_categories", "catalog", t =>
                         {
-                            t.HasCheckConstraint("chk_name", "name IN ('electronics', 'home', 'clothes', 'sports', 'beauty', 'games', 'toys', 'healthy', 'automotive', 'books', 'yard', 'tools', 'pets', 'children', 'jewelry', 'others')");
+                            t.HasCheckConstraint("chk_name", "name IN ('all', 'electronics', 'home', 'clothes', 'sports', 'beauty', 'games', 'toys', 'healthy', 'automotive', 'books', 'yard', 'tools', 'pets', 'children', 'jewelry', 'others')");
                         });
                 });
 

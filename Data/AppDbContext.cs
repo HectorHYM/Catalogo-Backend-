@@ -104,12 +104,12 @@ namespace CatalogoBackend.Data
             {
                 entity.ToTable(name: "tbl_categories", buildAction: table =>
                 {
-                    table.HasCheckConstraint(name: "chk_name", sql: "name IN ('all', 'electronics', 'home', 'clothes', 'sports', 'beauty', 'games', 'toys', 'healthy', 'automotive', 'books', 'yard', 'tools', 'pets', 'children', 'jewelry', 'others')");
+                    table.HasCheckConstraint(name: "chk_name", sql: "name IN ('electronics', 'home', 'clothes', 'sports', 'beauty', 'games', 'toys', 'healthy', 'automotive', 'books', 'yard', 'tools', 'pets', 'children', 'jewelry', 'others')");
                 }); 
 
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).HasColumnName("id");
-                entity.Property(e => e.Name).HasColumnName("name").HasDefaultValue("others").HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
             });
 
             modelBuilder.Entity<Favorite>(entity =>
